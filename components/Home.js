@@ -7,7 +7,10 @@ export default class Home extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { name: '' };
+    this.state = {
+      name: '',
+      color: ''
+    };
   }
   render() {
     return (
@@ -76,15 +79,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingTop: 50
   },
-  textInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    fontSize: 16,
-    fontWeight: '300',
-    color: '#757083',
-    opacity: 50
-  },
   chatOptions: {
     flex: 0.40,
     backgroundColor: '#FFF',
@@ -95,6 +89,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginHorizontal: '',
     alignSelf: 'center'
+  },
+  textInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: '300',
+    color: '#757083',
+    opacity: 50
   },
   backgroundColorText: {
     fontSize: 16,
