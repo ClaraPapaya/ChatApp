@@ -12,6 +12,10 @@ export default class Chat extends React.Component {
   }
 
   componentDidMount() {
+    this.props.navigation.setOptions({ title: name }, { color });
+    let name = this.props.route.params.name;
+
+
     this.setState({
       messages: [
         {
@@ -26,9 +30,9 @@ export default class Chat extends React.Component {
         },
         {
           _id: 2,
-          text: 'This is a system message',
+          text: name + ' has joined the chat.',
           createdAt: new Date(),
-          system: true,
+          system: true
         },
       ],
     })
@@ -56,8 +60,6 @@ export default class Chat extends React.Component {
   }
 
   render() {
-    let name = this.props.route.params.name;
-    this.props.navigation.setOptions({ title: name });
     let color = this.props.route.params.color;
     return (
       <View style={{ flex: 1, backgroundColor: color }}>
@@ -70,7 +72,7 @@ export default class Chat extends React.Component {
           }}
         />
         {/* Fixes the keyboard issue in android that blocks view on the input field*/}
-        {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
+        {Platform.OS === 'android' ? <KeyboardAvoidingView behavior='height' /> : null}
       </View>
     )
   }

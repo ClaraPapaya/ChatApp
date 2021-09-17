@@ -52,7 +52,7 @@ export default class Home extends React.Component {
             <Button
               style={[styles.button, styles.buttonText]}
               title="Go to Chat"
-              onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name }, { backgroundColor: this.state.color })}
+              onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name }, { color: this.state.color })}
             />
           </View>
         </View>
@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
     paddingLeft: '5%',
     paddingRight: '5%',
     justifyContent: 'space-around',
-    marginHorizontal: '',
     alignSelf: 'center'
   },
   textInput: {
