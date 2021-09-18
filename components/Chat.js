@@ -12,8 +12,8 @@ export default class Chat extends React.Component {
   }
 
   componentDidMount() {
-    this.props.navigation.setOptions({ title: name });
     let name = this.props.route.params.name;
+    this.props.navigation.setOptions({ title: name });
 
 
     this.setState({

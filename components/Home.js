@@ -52,7 +52,7 @@ export default class Home extends React.Component {
             <Button
               style={[styles.button, styles.buttonText]}
               title="Go to Chat"
-              onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name }, { color: this.state.color })}
+              onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color })}
             />
           </View>
         </View>
