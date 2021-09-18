@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Platform, KeyboardAvoidingView } from 'react-native';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 
 
 export default class Chat extends React.Component {
@@ -11,10 +11,10 @@ export default class Chat extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.props.navigation.setOptions({ title: name });
-    let name = this.props.route.params.name;
 
+  componentDidMount() {
+    let name = this.props.route.params.name;
+    this.props.navigation.setOptions({ title: name });
 
     this.setState({
       messages: [
@@ -38,7 +38,7 @@ export default class Chat extends React.Component {
     })
   }
 
-  // Sends the wriiten text to the chat screen
+  // Sends the written text to the chat screen
   onSend(messages = []) {
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
