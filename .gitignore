@@ -1,3 +1,4 @@
 node_modules
-.expo
-.idea
+.idea/
+.expo/
+.DS_Store

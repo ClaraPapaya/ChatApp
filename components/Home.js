@@ -10,7 +10,7 @@ export default class Home extends React.Component {
     this.state = {
       name: '',
       color: ''
-    };
+    }
   }
   render() {
     return (
@@ -31,7 +31,7 @@ export default class Home extends React.Component {
               style={styles.backgroundColorText}>
               Choose Background Color:
             </Text>
-            <View style={styles.color}>
+            <View style={styles.chooseColor}>
               <TouchableOpacity
                 style={styles.color1}
                 onPress={() => this.setState({ color: '#090C08' })}
@@ -52,7 +52,7 @@ export default class Home extends React.Component {
             <Button
               style={[styles.button, styles.buttonText]}
               title="Go to Chat"
-              onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name })}
+              onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name }, { color: this.state.color })}
             />
           </View>
         </View>
@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
     paddingLeft: '5%',
     paddingRight: '5%',
     justifyContent: 'space-around',
-    marginHorizontal: '',
     alignSelf: 'center'
   },
   textInput: {
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     color: '#757083',
     marginBottom: 10,
   },
-  color: {
+  chooseColor: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
