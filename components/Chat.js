@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, Platform, KeyboardAvoidingView, LogBox } from 'react-native';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 
 // Importing Firebase
@@ -18,12 +18,14 @@ const firebaseConfig = {
   measurementId: 'G-T7HCWXCTF3'
 };
 
+// Temporary fix for Warning message on Android (https://stackoverflow.com/questions/44603362/setting-a-timer-for-a-long-period-of-time-i-e-multiple-minutes)
+LogBox.ignoreLogs(["Setting a timer for a long period of time", "undefined"]);
 
 export default class Chat extends React.Component {
   constructor() {
     super();
     this.state = {
-      messages: [],
+      messages: []
     }
 
     // Initialize Firebase
@@ -123,7 +125,8 @@ export default class Chat extends React.Component {
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           user={{
-            _id: 1,
+            _id: this.state.uid,
+            name: this.props.route.params.name
           }}
         />
         {/* Fixes the keyboard issue in android that blocks view on the input field*/}
