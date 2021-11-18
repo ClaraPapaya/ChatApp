@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { Actions } from 'react-native-gifted-chat';
 import firebase from 'firebase';
 import 'firebase/firestore';
 
@@ -13,7 +12,7 @@ export default class CustomActions extends React.Component {
 
   // Pick an image from device's library to send
   pickImage = async () => {
-    // Asking user for permission
+    // Asking user for permission to access the device's library
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     try {
       if (status === 'granted') {
@@ -32,6 +31,7 @@ export default class CustomActions extends React.Component {
     }
   };
 
+  // Take a photo with the device's camera to send
   takePhoto = async () => {
     // Asking user for permission to access the camera
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -81,6 +81,33 @@ export default class CustomActions extends React.Component {
     return await snapshot.ref.getDownloadURL();
   };
 
+  // Access and send the user's location
+  getLocation = async () => {
+    // Asking user for permission to access location while the app is in the foreground
+    const { status } = await Location.getForegroundPermissionsAsync();
+    try {
+      if (status === 'granted') {
+        let result = await Location.getCurrentPositionAsync({})
+          .catch((error) => {
+            console.error(error);
+          });
+        // Send latitude and longitude to locate the position on the map  
+        const longitude = JSON.stringify(result.coords.longitude);
+        const latitude = JSON.stringify(result.coords.latitude);
+        if (result) {
+          this.props.onSend({
+            location: {
+              longitude: result.coords.longitude,
+              latitude: result.coords.latitude
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   // Handle communication features
   onActionPress = () => {
     const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
@@ -100,7 +127,7 @@ export default class CustomActions extends React.Component {
             return this.takePhoto();
           case 2:
             console.log('user wants to get their location');
-          default:
+            return this.getLocation();
         }
       },
     );
@@ -108,7 +135,12 @@ export default class CustomActions extends React.Component {
 
   render() {
     return (
-      <TouchableOpacity style={[styles.container]} onPress={this.onActionPress}>
+      <TouchableOpacity
+        accessible={true}
+        accessibilityLabel='More options'
+        accessibilityHint='Let’s you choose to send an image or your geolocation.'
+        style={[styles.container]}
+        onPress={this.onActionPress}>
         <View style={[styles.wrapper, this.props.wrapperStyle]}>
           <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
         </View>

@@ -3,6 +3,7 @@ import { View, Platform, KeyboardAvoidingView, LogBox } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { MapView } from 'react-native-maps';
 import CustomActions from './CustomActions';
 
 // Importing Firebase
@@ -36,7 +37,8 @@ export default class Chat extends React.Component {
         avatar: '',
       },
       isConnected: false,
-      image: null
+      image: null,
+      location: null,
     };
 
     // Initialize Firebase
@@ -155,6 +157,8 @@ export default class Chat extends React.Component {
         text: data.text,
         createdAt: data.createdAt.toDate(),
         user: data.user,
+        image: data.image || null,
+        location: data.location || null
       });
     });
 
@@ -240,6 +244,7 @@ export default class Chat extends React.Component {
           renderBubble={this.renderBubble.bind(this)}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
           onSend={messages => this.onSend(messages)}
           user={{
             _id: this.state.uid,
