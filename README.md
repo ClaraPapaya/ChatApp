@@ -31,9 +31,15 @@ and location data.
 * The chat interface and functionality must be created using the Gifted Chat library. 
 * The app’s codebase must contain comments. 
 ## Technologies Used
-+ React Native
-+ Google Firestore Database
-+ Gifted Chat
+
+- [Android Studio](https://developer.android.com/)
+- [Expo](https://expo.io/)
+- [Firebase](https://firebase.google.com/)
+- [Gifted Chat](https://github.com/FaridSafi/react-native-gifted-chat)
+- [JavaScript](https://www.javascript.com/)
+- [Node.js](https://nodejs.org/)
+- [React Native](https://reactnative.dev/)
+- [Visual Studio Code](https://code.visualstudio.com/)
 ## Getting Started
 + Node.js
 + Expo Command Line Interface
