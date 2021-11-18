@@ -1,11 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './components/Home';
 import Chat from './components/Chat';
-import { StyleSheet, Text, View, TextInput, Button, Alert, ScrollView, BackHandler } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 // Create the navigator
 const Stack = createStackNavigator();
@@ -42,4 +41,4 @@ const styles = StyleSheet.create({
 });
 
 
-/* <StatusBar style='auto' />\*/
+/* import { StatusBar } from 'expo-status-bar'; <StatusBar style='auto' />\*/
