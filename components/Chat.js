@@ -1,6 +1,10 @@
 import React from 'react';
-import { View, Platform, KeyboardAvoidingView } from 'react-native';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { View, Platform, KeyboardAvoidingView, LogBox } from 'react-native';
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
+import { MapView } from 'react-native-maps';
+import CustomActions from './CustomActions';
 
 // Importing Firebase
 const firebase = require('firebase');
@@ -18,13 +22,24 @@ const firebaseConfig = {
   measurementId: 'G-T7HCWXCTF3'
 };
 
+// Temporary fix for Warning message on Android (https://stackoverflow.com/questions/44603362/setting-a-timer-for-a-long-period-of-time-i-e-multiple-minutes)
+LogBox.ignoreLogs(["Setting a timer for a long period of time", "undefined"]);
 
 export default class Chat extends React.Component {
   constructor() {
     super();
     this.state = {
       messages: [],
-    }
+      uid: 0,
+      user: {
+        _id: '',
+        name: '',
+        avatar: '',
+      },
+      isConnected: false,
+      image: null,
+      location: null,
+    };
 
     // Initialize Firebase
     if (!firebase.apps.length) {
@@ -34,29 +49,101 @@ export default class Chat extends React.Component {
     this.referenceChatMessages = firebase.firestore().collection('messages');
   }
 
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = await AsyncStorage.getItem('messages') || [];
+      this.setState({
+        messages: JSON.parse(messages)
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  async saveMessages() {
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  // For development purposes
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem('messages');
+      this.setState({
+        messages: [],
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  addMessage() {
+    const message = this.state.messages[0];
+    this.referenceChatMessages.add({
+      _id: message._id,
+      text: message.text || null,
+      createdAt: message.createdAt,
+      user: message.user,
+      image: message.image || null,
+      location: message.location || null,
+    })
+  }
+
+
   componentDidMount() {
     let name = this.props.route.params.name;
     this.props.navigation.setOptions({ title: name });
 
-    // Firebase authentication
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        firebase.auth().signInAnonymously();
+    // NetInfo to check on user's online/offline status
+    NetInfo.fetch().then(connection => {
+      if (connection.isConnected) {
+        this.setState({
+          isConnected: true
+        });
+
+        // Firebase authentication
+        this.referenceChatMessages
+          .orderBy('createdAt', 'desc')
+          .onSnapshot(this.onCollectionUpdate);
+        this.authUnsubscribe = firebase
+          .auth()
+          .onAuthStateChanged(async (user) => {
+            if (!user) {
+              await firebase.auth().signInAnonymously();
+              user = {
+                uid: 1,
+                name: this.props.route.params.name
+              }
+            }
+            // Updates user state with currently active user data
+            this.setState((prevState) => ({
+              ...prevState,
+              uid: user.uid,
+              user: {
+                _id: user.uid,
+                name: user.name,
+                avatar: "https://placeimg.com/158/158/any"
+              }
+            }))
+          });
+      } else {
+        this.setState({
+          isConnected: false
+        });
+        // AsyncStorage
+        this.getMessages();
       }
-      // Updates user state with currently active user data
-      this.setState({
-        uid: user.uid,
-        messages: [],
-      });
-      this.unsubscribe = this.referenceChatMessages
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(this.onCollectionUpdate);
     });
   }
 
   componentWillUnmount() {
     // stop listening to authentication
     this.authUnsubscribe();
+    this.referenceChatMessages = () => { }
   }
 
   onCollectionUpdate = (querySnapshot) => {
@@ -70,32 +157,24 @@ export default class Chat extends React.Component {
         text: data.text,
         createdAt: data.createdAt.toDate(),
         user: data.user,
+        image: data.image || null,
+        location: data.location || null
       });
     });
 
     this.setState({
-      messages,
+      messages
     });
   };
 
-  // Adds message to chat
-  addMessage() {
-    const message = this.state.messages[0];
-    this.referenceChatMessages.add({
-      _id: message._id,
-      text: message.text,
-      createdAt: message.createdAt,
-      user: message.user,
-    });
-  }
-
-  // Sends the wriiten text to the chat screen
+  // Sends the written text to the chat screen
   onSend(messages = []) {
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }),
       () => {
         this.addMessage();
+        this.saveMessages();
       }
     );
   }
@@ -114,16 +193,62 @@ export default class Chat extends React.Component {
     )
   }
 
+  // Hide input toolbar for writing messages when user is offline
+  renderInputToolbar(props) {
+    if (this.state.isConnected == false) {
+    } else {
+      return (
+        <InputToolbar
+          {...props}
+        />
+      );
+    }
+  }
+
+  // Display the ActionSheet with options
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
+  // Handle rendering the custom map view
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{
+            width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3
+          }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  }
+
   render() {
     let color = this.props.route.params.color;
     return (
       <View style={{ flex: 1, backgroundColor: color }}>
         <GiftedChat
-          renderBubble={this.renderBubble.bind(this)}
           messages={this.state.messages}
+          isConnected={this.state.isConnected}
+          renderBubble={this.renderBubble.bind(this)}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
+          renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
           onSend={messages => this.onSend(messages)}
           user={{
-            _id: 1,
+            _id: this.state.uid,
+            name: this.props.route.params.name
           }}
         />
         {/* Fixes the keyboard issue in android that blocks view on the input field*/}
