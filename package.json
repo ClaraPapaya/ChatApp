@@ -16,7 +16,7 @@
     "cookies": "^0.8.0",
     "expo": "^42.0.5",
     "expo-status-bar": "~1.0.4",
-    "firebase": "8.2.3",
+    "firebase": "7.9.0",
     "js-cookie": "^3.0.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
