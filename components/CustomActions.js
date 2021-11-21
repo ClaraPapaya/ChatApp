@@ -84,16 +84,14 @@ export default class CustomActions extends React.Component {
   // Access and send the user's location
   getLocation = async () => {
     // Asking user for permission to access location while the app is in the foreground
-    const { status } = await Location.getForegroundPermissionsAsync();
+    const { status } = await Location.requestForegroundPermissionsAsync();
     try {
       if (status === 'granted') {
         let result = await Location.getCurrentPositionAsync({})
           .catch((error) => {
             console.error(error);
           });
-        // Send latitude and longitude to locate the position on the map  
-        const longitude = JSON.stringify(result.coords.longitude);
-        const latitude = JSON.stringify(result.coords.latitude);
+        // Send latitude and longitude to locate the position on the map
         if (result) {
           this.props.onSend({
             location: {
