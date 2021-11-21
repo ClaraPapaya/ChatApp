@@ -14,7 +14,15 @@ export default class Home extends React.Component {
   }
   render() {
     return (
-      <ImageBackground source={image} style={styles.image}>
+      <ImageBackground
+        source={image}
+        style={styles.image}
+        /* Accessibility */
+        accessible={true}
+        accessibilityLabel='App image background'
+        accessibilityHint='Shows a photo of three women talking.'
+        accessibilityRole='image'
+      >
         <View style={styles.container}>
           <Text style={styles.appTitle}>Papaya Chat</Text>
         </View>
@@ -31,7 +39,13 @@ export default class Home extends React.Component {
               style={styles.backgroundColorText}>
               Choose Background Color:
             </Text>
-            <View style={styles.chooseColor}>
+            <View
+              style={styles.chooseColor}
+              /* Accessibility */
+              accessible={true}
+              accessibilityLabel='Background color menu'
+              accessibilityHint='Menu to select the background color that will appear in the chat.'
+              accessibilityRole='menu'            >
               <TouchableOpacity
                 style={styles.color1}
                 onPress={() => this.setState({ color: '#090C08' })}
@@ -51,12 +65,17 @@ export default class Home extends React.Component {
             </View>
             <Button
               style={[styles.button, styles.buttonText]}
-              title="Go to Chat"
+              title='Go to Chat'
               onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color })}
+              /* Accessibility */
+              accessible={true}
+              accessibilityLabel='Go To Chat'
+              accessibilityHint='Go to the chat screen'
+              accessibilityRole='button'
             />
           </View>
         </View>
-      </ImageBackground>
+      </ImageBackground >
     )
   }
 };
@@ -96,7 +115,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '300',
     color: '#757083',
-    opacity: 50
+    opacity: 50,
+    paddingLeft: 5
   },
   backgroundColorText: {
     fontSize: 16,
